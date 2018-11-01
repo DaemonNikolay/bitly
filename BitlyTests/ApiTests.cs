@@ -1,12 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Bitly;
 using System.Threading.Tasks;
-using System.Threading;
 using System.Net;
 using System;
 using System.Collections.Specialized;
 using System.Text;
-using System.Net.Http;
 
 namespace BitlyTests
 {
@@ -25,7 +23,7 @@ namespace BitlyTests
 
             var api = new Api(login: login, apiKey: apiKey);
 
-            Assert.AreEqual(api.ApiKey, apiKey, message:"Api key is correct");
+            Assert.AreEqual(api.ApiKey, apiKey, message: "Api key is correct");
         }
 
         [TestMethod]
@@ -58,7 +56,7 @@ namespace BitlyTests
         }
 
         [TestMethod]
-        public async Task LongLinkToSmallTrueAsync()
+        public async Task LongLinkToSmallNikuluxAsync()
         {
             var smallUrl = await api.LongLinkToSmallAsync("http://nikulux.ru");
 
@@ -72,9 +70,81 @@ namespace BitlyTests
                 finalUrl = webClient.ResponseHeaders["link"];
             }
 
-            var condition = finalUrl.Contains("http://nikulux.ru/");
+            var condition = finalUrl.Contains("nikulux.ru/");
 
-            Assert.IsTrue(condition: condition, message: "Small link is correct");
+            Assert.IsTrue(condition: condition, message: "nikulux.ru, small link is correct");
+        }
+
+        [TestMethod]
+        public async Task LongLinkToSmallGoogleAsync()
+        {
+            var smallUrl = await api.LongLinkToSmallAsync("https://google.com");
+
+            var finalUrl = string.Empty;
+            using (var webClient = new WebClient())
+            {
+                var uri = new Uri(smallUrl);
+                var response = await webClient.UploadValuesTaskAsync(uri, new NameValueCollection());
+                var result = Encoding.UTF8.GetString(response);
+
+                finalUrl = webClient.ResponseHeaders["link"];
+                if (finalUrl == null)
+                {
+                    finalUrl = webClient.ResponseHeaders["Set-Cookie"];
+                }
+            }
+
+            var condition = finalUrl.Contains("google.com");
+
+            Assert.IsTrue(condition: condition, message: "google.com, small link is correct");
+        }
+
+        [TestMethod]
+        public async Task LongLinkToSmallYandexAsync()
+        {
+            var smallUrl = await api.LongLinkToSmallAsync("https://yandex.ru");
+
+            var finalUrl = string.Empty;
+            using (var webClient = new WebClient())
+            {
+                var uri = new Uri(smallUrl);
+                var response = await webClient.UploadValuesTaskAsync(uri, new NameValueCollection());
+                var result = Encoding.UTF8.GetString(response);
+
+                finalUrl = webClient.ResponseHeaders["link"];
+                if (finalUrl == null)
+                {
+                    finalUrl = webClient.ResponseHeaders["Set-Cookie"];
+                }
+            }
+
+            var condition = finalUrl.Contains("yandex.ru");
+
+            Assert.IsTrue(condition: condition, message: "yandex.ru, small link is correct");
+        }
+
+        [TestMethod]
+        public async Task LongLinkToSmallBitlyAsync()
+        {
+            var smallUrl = await api.LongLinkToSmallAsync("https://bitly.com/");
+
+            var finalUrl = string.Empty;
+            using (var webClient = new WebClient())
+            {
+                var uri = new Uri(smallUrl);
+                var response = await webClient.UploadValuesTaskAsync(uri, new NameValueCollection());
+                var result = Encoding.UTF8.GetString(response);
+
+                finalUrl = webClient.ResponseHeaders["link"];
+                if (finalUrl == null)
+                {
+                    finalUrl = webClient.ResponseHeaders["Set-Cookie"];
+                }
+            }
+
+            var condition = finalUrl.Contains("bitly.com");
+
+            Assert.IsTrue(condition: condition, message: "bitly.com, small link is correct");
         }
 
         [TestMethod]
