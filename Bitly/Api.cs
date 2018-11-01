@@ -9,8 +9,8 @@ namespace Bitly
 {
     public class Api
     {
-        private string Login { get; set; }
-        private string ApiKey { get; set; }
+        public string Login { get; private set; }
+        public string ApiKey { get; private set; }
         public string SmallUrl { get; private set; }
 
         public Api(string login, string apiKey)
@@ -35,19 +35,17 @@ namespace Bitly
             var apiUrl = $"http://api.bit.ly/v3/shorten?login={Login}&apiKey={ApiKey}&longUrl={link}&format=json";
             using (var webClient = new WebClient())
             {
-                var uri = new Uri(apiUrl);
-                var response = await webClient.UploadValuesTaskAsync(uri, new NameValueCollection());
+                var response = await webClient.UploadValuesTaskAsync(new Uri(apiUrl), new NameValueCollection());
                 responseJson = Encoding.UTF8.GetString(response);
             }
 
             var result = JObject.Parse(responseJson);
-            var statusCode = (int)result["status_code"];
-            if (statusCode == 200)
+            if ((int)result["status_code"] == 200)
             {
                 return result["data"]["url"].ToString(); ;
             }
 
-            return $"Status code: {statusCode}";
+            return null;
         }
     }
 }

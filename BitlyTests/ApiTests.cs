@@ -18,6 +18,46 @@ namespace BitlyTests
         private readonly Api api = new Api(login, apiKey);
 
         [TestMethod]
+        public void CheckAuthDataTrueApiKey()
+        {
+            const string login = "login";
+            const string apiKey = "apiKey";
+
+            var api = new Api(login: login, apiKey: apiKey);
+
+            Assert.AreEqual(api.ApiKey, apiKey, message:"Api key is correct");
+        }
+
+        [TestMethod]
+        public void CheckAuthDataTrueLogin()
+        {
+            const string login = "login";
+            const string apiKey = "apiKey";
+
+            var api = new Api(login: login, apiKey: apiKey);
+
+            Assert.AreEqual(api.Login, login, message: "Login is correct");
+        }
+
+        [TestMethod]
+        public void CheckAuthDataNull()
+        {
+            const string login = null;
+            const string apiKey = null;
+
+            Assert.ThrowsException<ArgumentException>(() => new Api(login: login, apiKey: apiKey), "Login or password is null");
+        }
+
+        [TestMethod]
+        public void CheckAuthDataEmpty()
+        {
+            var login = string.Empty;
+            var apiKey = string.Empty;
+
+            Assert.ThrowsException<ArgumentException>(() => new Api(login: login, apiKey: apiKey), "Login or password not correct");
+        }
+
+        [TestMethod]
         public async Task LongLinkToSmallTrueAsync()
         {
             var smallUrl = await api.LongLinkToSmallAsync("http://nikulux.ru");
@@ -40,8 +80,7 @@ namespace BitlyTests
         [TestMethod]
         public async Task LongLinkToSmallNullAsync()
         {
-            const string link = null;
-            var expected = await api.LongLinkToSmallAsync(link);
+            var expected = await api.LongLinkToSmallAsync(null);
 
             Assert.IsNull(value: expected, message: "Small link is null");
         }
@@ -49,10 +88,17 @@ namespace BitlyTests
         [TestMethod]
         public async Task LongLinkToSmallEmptyAsync()
         {
-            var link = string.Empty;
-            var expected = await api.LongLinkToSmallAsync(link);
+            var expected = await api.LongLinkToSmallAsync(string.Empty);
 
             Assert.IsNull(value: expected, message: "Small link is string empty");
+        }
+
+        [TestMethod]
+        public async Task LongLinkToSmallFalseAsync()
+        {
+            var expected = await api.LongLinkToSmallAsync("fdsfds");
+
+            Assert.IsNull(value: expected);
         }
     }
 }
