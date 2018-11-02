@@ -3,8 +3,6 @@ using Bitly;
 using System.Threading.Tasks;
 using System.Net;
 using System;
-using System.Collections.Specialized;
-using System.Text;
 
 namespace BitlyTests
 {
@@ -16,17 +14,6 @@ namespace BitlyTests
         private readonly Api api = new Api(login, apiKey);
 
         [TestMethod]
-        public void CheckAuthDataTrueApiKey()
-        {
-            const string login = "login";
-            const string apiKey = "apiKey";
-
-            var api = new Api(login: login, apiKey: apiKey);
-
-            Assert.AreEqual(api.ApiKey, apiKey, message: "Api key is correct");
-        }
-
-        [TestMethod]
         public void CheckAuthDataTrueLogin()
         {
             const string login = "login";
@@ -35,6 +22,17 @@ namespace BitlyTests
             var api = new Api(login: login, apiKey: apiKey);
 
             Assert.AreEqual(api.Login, login, message: "Login is correct");
+        }
+
+        [TestMethod]
+        public void CheckAuthDataTrueApiKey()
+        {
+            const string login = "login";
+            const string apiKey = "apiKey";
+
+            var api = new Api(login: login, apiKey: apiKey);
+
+            Assert.AreEqual(api.ApiKey, apiKey, message: "Api key is correct");
         }
 
         [TestMethod]
@@ -52,99 +50,109 @@ namespace BitlyTests
             var login = string.Empty;
             var apiKey = string.Empty;
 
-            Assert.ThrowsException<ArgumentException>(() => new Api(login: login, apiKey: apiKey), "Login or password not correct");
+            Assert.ThrowsException<ArgumentException>(() => new Api(login: login, apiKey: apiKey), "Login or password is empty");
         }
 
         [TestMethod]
         public async Task LongLinkToSmallNikuluxAsync()
         {
-            var smallUrl = await api.LongLinkToSmallAsync("http://nikulux.ru");
+            const string link = "http://nikulux.ru";
+            var smallUrl = await api.LongLinkToSmallAsync(link);
 
-            var finalUrl = string.Empty;
-            using (var webClient = new WebClient())
-            {
-                var uri = new Uri(smallUrl);
-                var response = await webClient.UploadValuesTaskAsync(uri, new NameValueCollection());
-                var result = Encoding.UTF8.GetString(response);
+            var req = (HttpWebRequest)WebRequest.Create(smallUrl);
+            req.Method = "POST";
 
-                finalUrl = webClient.ResponseHeaders["link"];
-            }
+            var response = await req.GetResponseAsync();
+            var expected = response.ResponseUri;
 
-            var condition = finalUrl.Contains("nikulux.ru/");
+            var condition = expected.Host == "nikulux.ru";
 
-            Assert.IsTrue(condition: condition, message: "nikulux.ru, small link is correct");
+            Assert.IsTrue(condition: condition, message: $"Link {link} correct, domen .ru");
         }
 
         [TestMethod]
         public async Task LongLinkToSmallGoogleAsync()
         {
-            var smallUrl = await api.LongLinkToSmallAsync("https://google.com");
+            const string link = "https://google.com";
+            var smallUrl = await api.LongLinkToSmallAsync(link);
 
-            var finalUrl = string.Empty;
-            using (var webClient = new WebClient())
-            {
-                var uri = new Uri(smallUrl);
-                var response = await webClient.UploadValuesTaskAsync(uri, new NameValueCollection());
-                var result = Encoding.UTF8.GetString(response);
+            var req = (HttpWebRequest)WebRequest.Create(smallUrl);
+            req.Method = "POST";
 
-                finalUrl = webClient.ResponseHeaders["link"];
-                if (finalUrl == null)
-                {
-                    finalUrl = webClient.ResponseHeaders["Set-Cookie"];
-                }
-            }
+            var response = await req.GetResponseAsync();
+            var expected = response.ResponseUri;
 
-            var condition = finalUrl.Contains("google.com");
+            var condition = expected.Host == "www.google.com";
 
-            Assert.IsTrue(condition: condition, message: "google.com, small link is correct");
+            Assert.IsTrue(condition: condition, message: $"Link {link} correct and redirect, domen .com and prefix 'www'");
         }
 
         [TestMethod]
         public async Task LongLinkToSmallYandexAsync()
         {
-            var smallUrl = await api.LongLinkToSmallAsync("https://yandex.ru");
+            const string link = "https://yandex.ru";
+            var smallUrl = await api.LongLinkToSmallAsync(link);
 
-            var finalUrl = string.Empty;
-            using (var webClient = new WebClient())
-            {
-                var uri = new Uri(smallUrl);
-                var response = await webClient.UploadValuesTaskAsync(uri, new NameValueCollection());
-                var result = Encoding.UTF8.GetString(response);
+            var req = (HttpWebRequest)WebRequest.Create(smallUrl);
+            req.Method = "POST";
 
-                finalUrl = webClient.ResponseHeaders["link"];
-                if (finalUrl == null)
-                {
-                    finalUrl = webClient.ResponseHeaders["Set-Cookie"];
-                }
-            }
+            var response = await req.GetResponseAsync();
+            var expected = response.ResponseUri;
 
-            var condition = finalUrl.Contains("yandex.ru");
+            var condition = expected.Host == "yandex.ru";
 
-            Assert.IsTrue(condition: condition, message: "yandex.ru, small link is correct");
+            Assert.IsTrue(condition: condition, message: $"Link {link} correct, , domen .ru");
         }
 
         [TestMethod]
         public async Task LongLinkToSmallBitlyAsync()
         {
-            var smallUrl = await api.LongLinkToSmallAsync("https://bitly.com/");
+            const string link = "https://bitly.com/";
+            var smallUrl = await api.LongLinkToSmallAsync(link);
 
-            var finalUrl = string.Empty;
-            using (var webClient = new WebClient())
-            {
-                var uri = new Uri(smallUrl);
-                var response = await webClient.UploadValuesTaskAsync(uri, new NameValueCollection());
-                var result = Encoding.UTF8.GetString(response);
+            var req = (HttpWebRequest)WebRequest.Create(smallUrl);
+            req.Method = "POST";
 
-                finalUrl = webClient.ResponseHeaders["link"];
-                if (finalUrl == null)
-                {
-                    finalUrl = webClient.ResponseHeaders["Set-Cookie"];
-                }
-            }
+            var response = await req.GetResponseAsync();
+            var expected = response.ResponseUri;
 
-            var condition = finalUrl.Contains("bitly.com");
+            var condition = expected.Host == "bitly.com";
 
-            Assert.IsTrue(condition: condition, message: "bitly.com, small link is correct");
+            Assert.IsTrue(condition: condition, message: $"Link {link} correct, domen .com");
+        }
+
+        [TestMethod]
+        public async Task LongLinkToSmallMedvedStudioAsync()
+        {
+            const string link = "https://medved.studio/";
+            var smallUrl = await api.LongLinkToSmallAsync(link);
+
+            var req = (HttpWebRequest)WebRequest.Create(smallUrl);
+            req.Method = "POST";
+
+            var response = await req.GetResponseAsync();
+            var expected = response.ResponseUri;
+
+            var condition = expected.Host == "medved.studio";
+
+            Assert.IsTrue(condition: condition, message: $"Link {link} correct, domen .studio");
+        }
+
+        [TestMethod]
+        public async Task LongLinkToSmallRedirectAsync()
+        {
+            const string link = "https://pinterest.ru/";
+            var smallUrl = await api.LongLinkToSmallAsync(link);
+
+            var req = (HttpWebRequest)WebRequest.Create(smallUrl);
+            req.Method = "POST";
+
+            var response = await req.GetResponseAsync();
+            var expected = response.ResponseUri;
+
+            var condition = expected.Host == "www.pinterest.ru";
+
+            Assert.IsTrue(condition: condition, message: $"Link {link} correct and redirect, domen .ru and prefix 'www'");
         }
 
         [TestMethod]
