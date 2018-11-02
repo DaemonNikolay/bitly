@@ -122,7 +122,7 @@ namespace BitlyTests
         }
 
         [TestMethod]
-        public async Task LongLinkToSmallMedvedStudioAsync()
+        public async Task LongLinkToSmallMedvedAsync()
         {
             const string link = "https://medved.studio/";
             var smallUrl = await api.LongLinkToSmallAsync(link);

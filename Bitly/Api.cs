@@ -11,13 +11,12 @@ namespace Bitly
     {
         public string Login { get; private set; }
         public string ApiKey { get; private set; }
-        public string SmallUrl { get; private set; }
 
         public Api(string login, string apiKey)
         {
             if (string.IsNullOrEmpty(login) && string.IsNullOrEmpty(apiKey))
             {
-                throw new ArgumentException("Login or password is empty", nameof(login));
+                throw new ArgumentException("Login or password not correct", nameof(login));
             }
 
             Login = login;
