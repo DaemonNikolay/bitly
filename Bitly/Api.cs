@@ -31,7 +31,6 @@ namespace Bitly
                 return null;
             }
 
-
             var responseJson = string.Empty;
             var apiUrl = $"http://api.bit.ly/v3/shorten?login={Login}&apiKey={ApiKey}&longUrl={link}&format=json";
             using (var webClient = new WebClient())
@@ -59,9 +58,10 @@ namespace Bitly
             using (var ping = new Ping())
             {
                 const string host = "google.com";
-                var buffer = new byte[32];
                 const int timeout = 1000;
+                var buffer = new byte[32];
                 var options = new PingOptions();
+
                 try
                 {
                     var reply = ping.Send(host, timeout, buffer, options);
