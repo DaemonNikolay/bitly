@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,10 +26,11 @@ namespace Bitly
 
         public async Task<string> LongLinkToSmallAsync(string link)
         {
-            if (string.IsNullOrEmpty(link))
+            if (CheckForInternetConnection() && !IsCorrectLink(link) && string.IsNullOrEmpty(link))
             {
                 return null;
             }
+
 
             var responseJson = string.Empty;
             var apiUrl = $"http://api.bit.ly/v3/shorten?login={Login}&apiKey={ApiKey}&longUrl={link}&format=json";
@@ -45,6 +47,32 @@ namespace Bitly
             }
 
             return null;
+        }
+
+        private static bool IsCorrectLink(string link)
+        {
+            return Uri.IsWellFormedUriString(link, UriKind.Absolute);
+        }
+
+        public static bool CheckForInternetConnection()
+        {
+            using (var ping = new Ping())
+            {
+                const string host = "google.com";
+                var buffer = new byte[32];
+                const int timeout = 1000;
+                var options = new PingOptions();
+                try
+                {
+                    var reply = ping.Send(host, timeout, buffer, options);
+
+                    return reply.Status == IPStatus.Success;
+                }
+                catch (PingException)
+                {
+                    return false;
+                }
+            }
         }
     }
 }
