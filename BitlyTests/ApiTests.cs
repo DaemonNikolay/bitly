@@ -122,23 +122,6 @@ namespace BitlyTests
         }
 
         [TestMethod]
-        public async Task LongLinkToSmallMedvedAsync()
-        {
-            const string link = "https://medved.studio/";
-            var smallUrl = await api.LongLinkToSmallAsync(link);
-
-            var req = (HttpWebRequest)WebRequest.Create(smallUrl);
-            req.Method = "POST";
-
-            var response = await req.GetResponseAsync();
-            var expected = response.ResponseUri;
-
-            var condition = expected.Host == "medved.studio";
-
-            Assert.IsTrue(condition: condition, message: $"Link {link} correct, domen .studio");
-        }
-
-        [TestMethod]
         public async Task LongLinkToSmallRedirectAsync()
         {
             const string link = "https://pinterest.ru/";

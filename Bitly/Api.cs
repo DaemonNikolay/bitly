@@ -26,7 +26,7 @@ namespace Bitly
 
         public async Task<string> LongLinkToSmallAsync(string link)
         {
-            if (CheckForInternetConnection() && !IsCorrectLink(link) && string.IsNullOrEmpty(link))
+            if (IsInternetConnection() && !IsCorrectLink(link) && string.IsNullOrEmpty(link))
             {
                 return null;
             }
@@ -48,12 +48,12 @@ namespace Bitly
             return null;
         }
 
-        private static bool IsCorrectLink(string link)
+        public static bool IsCorrectLink(string link)
         {
-            return Uri.IsWellFormedUriString(link, UriKind.Absolute);
+            return Uri.IsWellFormedUriString(link, UriKind.RelativeOrAbsolute);
         }
 
-        public static bool CheckForInternetConnection()
+        private static bool IsInternetConnection()
         {
             using (var ping = new Ping())
             {
