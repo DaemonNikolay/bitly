@@ -3,6 +3,7 @@ using System;
 using System.Collections.Specialized;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Bitly
@@ -49,7 +50,14 @@ namespace Bitly
 
         private static bool IsCorrectLink(string link)
         {
-            return Uri.IsWellFormedUriString(link, UriKind.RelativeOrAbsolute);
+            if (link == null)
+            {
+                return false;
+            }
+
+            const string pattern = "#((https?|ftp)://(\\S*?\\.\\S*?))([\\s)\\[\\]{},;\"\':<]|\\.\\s|$)#i";
+
+            return Regex.IsMatch(link, pattern);
         }
     }
 }

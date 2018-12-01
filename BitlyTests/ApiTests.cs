@@ -161,5 +161,13 @@ namespace BitlyTests
 
             Assert.IsNull(value: expected);
         }
+
+        [TestMethod]
+        public async Task LongLinkToSmallLikNotCorrectAsync()
+        {
+            var expected = await api.LongLinkToSmallAsync("Htttp://google.com");
+
+            Assert.IsNull(value: expected);
+        }
     }
 }
